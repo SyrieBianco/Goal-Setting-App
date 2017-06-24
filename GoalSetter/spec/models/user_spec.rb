@@ -19,21 +19,24 @@ RSpec.describe User, type: :model do
 
 
   describe "find_by_credentials" do
-    password = 'kwon'
-    password_digest = BCrypt::Password.create('kwon')
-    user = User.create(username: 'daniel', password_digest: password_digest,
-    session_token: "awkejtl")
+
+    let :user do
+      password = 'kwon'
+      password_digest = BCrypt::Password.create(password)
+      user = User.create(username: 'daniel', password_digest: password_digest,
+      session_token: "awkejtl") unless User.exists?(username: 'daniel')
+    end
 
     it "should return the user if the username and password are valid" do
-      exp(User.find_by_credentials(user.username, password)).to eq(user)
+      expect(User.find_by_credentials(user.username, 'kwon')).to eq(user)
     end
 
     it "should return nil if username doesn't exist" do
-      exp(User.find_by_credentials('syrie', password)).to be(nil)
+      expect(User.find_by_credentials('syrie', 'kwon')).to be(nil)
     end
 
     it "should return nil if password incorrect" do
-      exp(User.find_by_credentials('daniel', 'asdf')).to be(nil)
+      expect(User.find_by_credentials('daniel', 'asdf')).to be(nil)
     end
   end
 end
